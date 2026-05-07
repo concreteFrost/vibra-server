@@ -1,0 +1,9 @@
+PUT http://localhost:8082/api/track/update-meta
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjFkNmMxNzcxLTQwOGEtNDU0Zi04MTI1LTU1ZjUxZDlhMTMzZiIsImVtYWlsIjoiY29uY3JldGVhZ2VyQGdtYWlsLmNvbSIsImlhdCI6MTc3ODA2NDA0NiwiZXhwIjoxODA5NjAwMDQ2fQ.2I-MENVwdJoOux0TeX9_s6g_Ev6XMG5lxt2g3fNEaZM
+
+{
+  "trackId": "3c148259w-186b-4ea0-b28c-b7ca13dc6577",
+  "title": "new title",
+  "artistId": null
+}
