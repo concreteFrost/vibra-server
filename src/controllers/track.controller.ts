@@ -4,7 +4,7 @@ import { deleteTrackFromS3, uploadToS3 } from "../utils/s3Utils";
 import { Prisma } from "../generated/prisma/client";
 
 export const uploadTrack = async (req: Request, res: Response) => {
-  const { title } = req.body;
+  const { title, artistId } = req.body;
   const { userId } = req.user!;
 
   try {
@@ -33,6 +33,7 @@ export const uploadTrack = async (req: Request, res: Response) => {
         uploaderId: userId,
         title,
         fileKey: key,
+        artistId: artistId ?? null,
       },
     });
 
@@ -114,5 +115,38 @@ export const updateTrackMeta = async (req: Request, res: Response) => {
     return res.status(500).json({
       message: "Track update failed",
     });
+  }
+};
+
+export const getAllTracks = async (req: Request, res: Response) => {
+  const allTracks = await prisma.track.findMany();
+
+  res.status(200).json({
+    tracks: allTracks,
+  });
+};
+
+export const getAllTracksByArtist = async (req: Request, res: Response) => {
+  const { artistId } = req.params;
+
+  try {
+    const allTrackByArtist = await prisma.track.findMany({
+      where: {
+        artistId: artistId as string,
+      },
+    });
+
+    if (!allTrackByArtist) {
+      return res
+        .status(404)
+        .json({ message: "no tracks found for this artist" });
+    }
+
+    res.status(200).json({
+      tracks: allTrackByArtist,
+    });
+  } catch (error) {
+    console.log("error getting artist`s tracks", error);
+    res.status(500).json({ message: "error getting artist`s tracks" });
   }
 };

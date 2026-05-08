@@ -3,6 +3,8 @@ import {
   updateTrackMeta,
   deleteTrack,
   uploadTrack,
+  getAllTracksByArtist,
+  getAllTracks,
 } from "../controllers/track.controller";
 import { upload } from "../middleware/uploadFile.middleware";
 import { streamTrack } from "../controllers/stream.controller";
@@ -21,6 +23,17 @@ import {
 } from "../controllers/auth.controller";
 import { authCheck } from "../middleware/authCheck.middleware";
 import { trackUploadSchema, updateTrackSchema } from "../schemas/track.schema";
+import {
+  createNewArtistSchema,
+  updateArtistSchema,
+} from "../schemas/artist.schema";
+import {
+  addNewArtist,
+  deleteArtist,
+  getAllArtists,
+  getArtistsByUser,
+  updateArtist,
+} from "../controllers/artist.controller";
 
 const router: Router = Router();
 
@@ -55,5 +68,28 @@ router.put(
   validate(updateTrackSchema),
   updateTrackMeta,
 );
+router.get("/track/get-all", authCheck, getAllTracks);
+router.get(
+  "/track/get-all-by-artist/:artistId",
+  authCheck,
+  getAllTracksByArtist,
+);
+
+//artist
+router.post(
+  "/artist/create",
+  authCheck,
+  validate(createNewArtistSchema),
+  addNewArtist,
+);
+router.put(
+  "/artist/update",
+  authCheck,
+  validate(updateArtistSchema),
+  updateArtist,
+);
+router.get("/artist/get-all", authCheck, getAllArtists);
+router.get("/artist/get-all-by-user/:id", authCheck, getArtistsByUser);
+router.delete("/artist/delete/:id", authCheck, deleteArtist);
 
 export default router;

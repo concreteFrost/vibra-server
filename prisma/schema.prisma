@@ -19,7 +19,8 @@ model User {
   passHash  String
   createdAt DateTime @default(now())
 
-  tracks Track[]
+  tracks  Track[]
+  artists Artist[]
 }
 
 model Track {
@@ -31,13 +32,17 @@ model Track {
   uploader   User   @relation(fields: [uploaderId], references: [id], onDelete: Cascade)
   uploaderId String
 
-  artist   Artist? @relation(fields: [artistId], references: [id])
+  artist   Artist? @relation(fields: [artistId], references: [id], onDelete: SetNull)
   artistId String?
 }
 
 model Artist {
-  id   String @id @default(uuid())
-  name String
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+
+  createdBy User?   @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  creatorId String?
 
   tracks Track[]
 }
