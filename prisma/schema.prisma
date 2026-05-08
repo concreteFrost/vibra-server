@@ -64,7 +64,8 @@ model TrackLike {
 }
 
 model TrackComment {
-  id String @id @default(uuid())
+  id      String @id @default(uuid())
+  content String
 
   commentedBy User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String
@@ -73,6 +74,4 @@ model TrackComment {
   trackId String
 
   createdAt DateTime @default(now())
-
-  @@unique([userId, trackId])
 }
