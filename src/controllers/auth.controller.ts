@@ -42,6 +42,7 @@ export const register = async (req: Request, res: Response) => {
     res.status(200).json({
       message: "User created successfully",
       token,
+      newUser,
     });
   } catch (error) {
     console.log("Registration error", error);
@@ -78,8 +79,11 @@ export const login = async (req: Request, res: Response) => {
 
     const token = signToken(existingUser);
 
+    const { passHash, createdAt, ...rest } = existingUser;
+
     res.status(200).json({
       token,
+      user: rest,
     });
   } catch (error) {
     console.log("Login error", error);

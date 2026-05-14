@@ -1,7 +1,7 @@
 // src/middleware/validate.middleware.ts
 
 import { Request, Response, NextFunction } from "express";
-import { ZodObject, ZodError } from "zod";
+import { ZodObject, ZodError, prettifyError } from "zod";
 
 export const validate =
   (schema: ZodObject) => (req: Request, res: Response, next: NextFunction) => {
@@ -12,7 +12,7 @@ export const validate =
     } catch (error) {
       if (error instanceof ZodError) {
         return res.status(400).json({
-          errors: error.flatten().fieldErrors,
+          message: prettifyError(error),
         });
       }
 
