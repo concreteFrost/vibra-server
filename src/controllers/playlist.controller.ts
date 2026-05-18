@@ -215,3 +215,20 @@ export const updatePlaylist = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const getMyPlaylists = async (req: Request, res: Response) => {
+  const { userId } = req.user!;
+
+  try {
+    const playlists = await prisma.playlist.findMany({
+      where: {
+        userId: userId,
+      },
+    });
+
+    res.status(200).json({ playlists });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "error getting user playlists" });
+  }
+};
