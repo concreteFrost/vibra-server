@@ -1,6 +1,10 @@
 import { Response, Request } from "express";
 import { prisma } from "../lib/prisma";
-import { deleteTrackFromS3, uploadToS3 } from "../utils/s3Utils";
+import {
+  deleteTrackFromS3,
+  getTrackStreamUrl,
+  uploadToS3,
+} from "../utils/s3Utils";
 import { Prisma } from "../generated/prisma/client";
 
 export const uploadTrack = async (req: Request, res: Response) => {
@@ -136,6 +140,7 @@ export const getTracksByUser = async (req: Request, res: Response) => {
       },
       select: {
         id: true,
+        fileKey: true,
         title: true,
         likes: true,
         comments: true,
@@ -144,8 +149,19 @@ export const getTracksByUser = async (req: Request, res: Response) => {
       },
     });
 
+    const tracksWithStreamURL = [];
+
+    for (let t of allTracks) {
+      const url = await getTrackStreamUrl(t.fileKey);
+      const payload = {
+        ...t,
+        streamURL: url,
+      };
+      tracksWithStreamURL.push(payload);
+    }
+
     res.status(200).json({
-      tracks: allTracks,
+      tracks: tracksWithStreamURL,
     });
   } catch (error) {
     res.status(500).json({ message: "Error getting user tracks" });

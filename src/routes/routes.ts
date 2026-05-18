@@ -27,6 +27,13 @@ import {
   createNewArtistSchema,
   updateArtistSchema,
 } from "../schemas/artist.schema";
+import {
+  addTrackToPlaylist,
+  createPlaylist,
+  deletePlaylist,
+  deleteTrackFromPlaylist,
+  updatePlaylist,
+} from "../controllers/playlist.controller";
 
 const router: Router = Router();
 
@@ -85,5 +92,12 @@ router.get("/track/get-all", authCheck, getAllTracks);
 // router.get("/artist/get-all", authCheck, getAllArtists);
 // router.get("/artist/get-all-by-user/:id", authCheck, getArtistsByUser);
 // router.delete("/artist/delete/:id", authCheck, deleteArtist);
+
+//playlists
+router.post("/playlist/create", authCheck, createPlaylist);
+router.post("/playlist/add-track", authCheck, addTrackToPlaylist);
+router.delete("/playlist/delete-track", authCheck, deleteTrackFromPlaylist);
+router.delete("/playlist/delete/:id", authCheck, deletePlaylist);
+router.put("/playlist/update", authCheck, updatePlaylist);
 
 export default router;

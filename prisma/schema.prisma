@@ -14,6 +14,7 @@ model User {
   passHash String
 
   tracks        Track[]
+  playlists     Playlist[]
   // artists       Artist[]
   trackLikes    TrackLike[]
   trackComments TrackComment[]
@@ -31,6 +32,8 @@ model Track {
   uploader   User   @relation(fields: [uploaderId], references: [id], onDelete: Cascade)
   uploaderId String
   artistName String @default("")
+
+  playlists PlaylistTrack[]
   // artist   Artist? @relation(fields: [artistId], references: [id], onDelete: SetNull)
   // artistId String?
 
@@ -74,4 +77,22 @@ model TrackComment {
   trackId String
 
   createdAt DateTime @default(now())
+}
+
+model Playlist {
+  id     String          @id @default(uuid())
+  title  String
+  tracks PlaylistTrack[]
+  owner  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+}
+
+model PlaylistTrack {
+  track   Track  @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  trackId String
+
+  playlist   Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  playlistId String
+
+  @@unique([playlistId, trackId])
 }
