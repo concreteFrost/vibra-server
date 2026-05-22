@@ -224,11 +224,48 @@ export const getMyPlaylists = async (req: Request, res: Response) => {
       where: {
         userId: userId,
       },
+      include: {
+        tracks: true,
+      },
     });
 
     res.status(200).json({ playlists });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "error getting user playlists" });
+  }
+};
+export const getPlaylist = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { userId } = req.user!;
+
+  try {
+    const playlist = await prisma.playlist.findUnique({
+      where: {
+        id: id as string,
+        userId: userId,
+      },
+      include: {
+        tracks: {
+          include: {
+            track: true,
+          },
+        },
+      },
+    });
+
+    if (!playlist) {
+      return res.status(404).json({ message: "playlist not found" });
+    }
+
+    const formattedPlaylist = {
+      ...playlist,
+      tracks: playlist.tracks.map((item) => item.track),
+    };
+
+    res.status(200).json({ playlist: formattedPlaylist });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "error getting playlist" });
   }
 };

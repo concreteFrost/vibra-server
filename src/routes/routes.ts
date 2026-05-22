@@ -33,6 +33,7 @@ import {
   deletePlaylist,
   deleteTrackFromPlaylist,
   getMyPlaylists,
+  getPlaylist,
   updatePlaylist,
 } from "../controllers/playlist.controller";
 
@@ -101,5 +102,5 @@ router.delete("/playlist/delete-track", authCheck, deleteTrackFromPlaylist);
 router.delete("/playlist/delete/:id", authCheck, deletePlaylist);
 router.put("/playlist/update", authCheck, updatePlaylist);
 router.get("/playlist/get-all-by-user", authCheck, getMyPlaylists);
-
+router.get("/playlist/get-one/:id", authCheck, getPlaylist);
 export default router;
