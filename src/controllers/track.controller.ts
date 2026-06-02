@@ -138,15 +138,6 @@ export const getTracksByUser = async (req: Request, res: Response) => {
       where: {
         uploaderId: userId,
       },
-      select: {
-        id: true,
-        fileKey: true,
-        title: true,
-        likes: true,
-        comments: true,
-        artistName: true,
-        createdAt: true,
-      },
     });
 
     const tracksWithStreamURL = [];
@@ -159,6 +150,8 @@ export const getTracksByUser = async (req: Request, res: Response) => {
       };
       tracksWithStreamURL.push(payload);
     }
+
+    console.log(tracksWithStreamURL);
 
     res.status(200).json({
       tracks: tracksWithStreamURL,

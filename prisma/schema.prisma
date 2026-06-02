@@ -8,91 +8,66 @@ datasource db {
 }
 
 model User {
-  id       String @id @default(uuid())
-  username String
-  email    String @unique
-  passHash String
-
-  tracks        Track[]
+  id            String         @id @default(uuid())
+  email         String         @unique
+  passHash      String
+  createdAt     DateTime       @default(now())
+  username      String
   playlists     Playlist[]
-  // artists       Artist[]
-  trackLikes    TrackLike[]
+  tracks        Track[]
   trackComments TrackComment[]
-
-  createdAt DateTime @default(now())
+  trackLikes    TrackLike[]
 }
 
 model Track {
-  id       String         @id @default(uuid())
-  title    String
-  fileKey  String
-  likes    TrackLike[]
-  comments TrackComment[]
-
-  uploader   User   @relation(fields: [uploaderId], references: [id], onDelete: Cascade)
+  id         String          @id @default(uuid())
+  title      String
+  createdAt  DateTime        @default(now())
+  fileKey    String
   uploaderId String
-  artistName String @default("")
-
-  playlists PlaylistTrack[]
-  // artist   Artist? @relation(fields: [artistId], references: [id], onDelete: SetNull)
-  // artistId String?
-
-  createdAt DateTime @default(now())
+  artistName String          @default("")
+  playlists  PlaylistTrack[]
+  uploader   User            @relation(fields: [uploaderId], references: [id], onDelete: Cascade)
+  comments   TrackComment[]
+  likes      TrackLike[]
 }
 
-// model Artist {
-//   id   String @id @default(uuid())
-//   name String
-
-//   createdBy User?   @relation(fields: [creatorId], references: [id], onDelete: Cascade)
-//   creatorId String?
-
-//   tracks Track[]
-
-//   createdAt DateTime @default(now())
-// }
-
 model TrackLike {
-  id String @id @default(uuid())
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String
-
-  track   Track  @relation(fields: [trackId], references: [id], onDelete: Cascade)
-  trackId String
-
+  id        String   @id @default(uuid())
+  userId    String
+  trackId   String
   createdAt DateTime @default(now())
+  track     Track    @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, trackId])
 }
 
 model TrackComment {
-  id      String @id @default(uuid())
-  content String
-
-  commentedBy User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String   @id @default(uuid())
   userId      String
-
-  track   Track  @relation(fields: [trackId], references: [id], onDelete: Cascade)
-  trackId String
-
-  createdAt DateTime @default(now())
+  trackId     String
+  createdAt   DateTime @default(now())
+  content     String
+  track       Track    @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  commentedBy User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Playlist {
   id     String          @id @default(uuid())
   title  String
-  tracks PlaylistTrack[]
-  owner  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
+  owner  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tracks PlaylistTrack[]
 }
 
 model PlaylistTrack {
-  track   Track  @relation(fields: [trackId], references: [id], onDelete: Cascade)
-  trackId String
-
-  playlist   Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  trackId    String
   playlistId String
+  position   Int
+  playlist   Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  track      Track    @relation(fields: [trackId], references: [id], onDelete: Cascade)
 
   @@unique([playlistId, trackId])
+  @@unique([playlistId, position])
 }

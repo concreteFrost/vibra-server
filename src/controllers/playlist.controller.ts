@@ -71,10 +71,20 @@ export const addTrackToPlaylist = async (req: Request, res: Response) => {
       });
     }
 
+    const lastTrack = await prisma.playlistTrack.aggregate({
+      where: { playlistId },
+      _max: {
+        position: true,
+      },
+    });
+
+    const newTrackPosition = (lastTrack._max.position ?? -1) + 1;
+
     const newTrack = await prisma.playlistTrack.create({
       data: {
         playlistId,
         trackId,
+        position: newTrackPosition,
       },
     });
 
@@ -127,11 +137,27 @@ export const deleteTrackFromPlaylist = async (req: Request, res: Response) => {
       });
     }
 
+    const deletedTrackPosition = relation.position;
+
     await prisma.playlistTrack.delete({
       where: {
         playlistId_trackId: {
           playlistId,
           trackId,
+        },
+      },
+    });
+
+    await prisma.playlistTrack.updateMany({
+      where: {
+        playlistId,
+        position: {
+          gt: deletedTrackPosition,
+        },
+      },
+      data: {
+        position: {
+          decrement: 1,
         },
       },
     });
@@ -225,7 +251,11 @@ export const getMyPlaylists = async (req: Request, res: Response) => {
         userId: userId,
       },
       include: {
-        tracks: true,
+        tracks: {
+          include: {
+            track: true,
+          },
+        },
       },
     });
 
@@ -258,12 +288,7 @@ export const getPlaylist = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "playlist not found" });
     }
 
-    const formattedPlaylist = {
-      ...playlist,
-      tracks: playlist.tracks.map((item) => item.track),
-    };
-
-    res.status(200).json({ playlist: formattedPlaylist });
+    res.status(200).json({ playlist });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "error getting playlist" });
